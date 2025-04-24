@@ -12,6 +12,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _nicknameController = TextEditingController();
+  final _descriptionController = TextEditingController();
+
   bool _isLogin = true;
 
   @override
@@ -21,14 +24,18 @@ class _LoginPageState extends State<LoginPage> {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {
-            Navigator.pushReplacementNamed(context, '/profile', arguments: state.email);
+            Navigator.pushReplacementNamed(context, '/profile', arguments: {
+              'email': state.email,
+              'nickname': state.nickname,
+              'description': state.description,
+            });
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),
             );
           }
         },
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
@@ -42,6 +49,19 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(labelText: 'Пароль'),
                 obscureText: true,
               ),
+              if (!_isLogin) ...[
+                SizedBox(height: 12),
+                TextField(
+                  controller: _nicknameController,
+                  decoration: InputDecoration(labelText: 'Ник'),
+                ),
+                SizedBox(height: 12),
+                TextField(
+                  controller: _descriptionController,
+                  decoration: InputDecoration(labelText: 'Описание'),
+                  maxLines: 3,
+                ),
+              ],
               SizedBox(height: 24),
               BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, state) {
@@ -52,10 +72,13 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () {
                       final email = _emailController.text.trim();
                       final password = _passwordController.text.trim();
+
                       if (_isLogin) {
                         context.read<AuthBloc>().add(LoginRequested(email, password));
                       } else {
-                        context.read<AuthBloc>().add(RegisterRequested(email, password));
+                        final nickname = _nicknameController.text.trim();
+                        final description = _descriptionController.text.trim();
+                        context.read<AuthBloc>().add(RegisterRequested(email, password, nickname, description));
                       }
                     },
                     child: Text(_isLogin ? 'Войти' : 'Зарегистрироваться'),
