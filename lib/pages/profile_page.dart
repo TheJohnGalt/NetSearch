@@ -6,7 +6,8 @@ import '../blocs/auth_event.dart';
 class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     final email = args['email'] ?? '';
     final nickname = args['nickname'] ?? '';
@@ -17,12 +18,18 @@ class ProfilePage extends StatelessWidget {
         title: Text('Профиль пользователя'),
         actions: [
           IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              Navigator.pushNamed(context, '/search');
+            },
+          ),
+          IconButton(
             icon: Icon(Icons.logout),
             onPressed: () {
               context.read<AuthBloc>().add(LogoutRequested());
               Navigator.pushReplacementNamed(context, '/');
             },
-          )
+          ),
         ],
       ),
       body: Padding(
@@ -32,7 +39,8 @@ class ProfilePage extends StatelessWidget {
           children: [
             Text('Email: $email', style: TextStyle(fontSize: 18)),
             SizedBox(height: 12),
-            Text('Ник: $nickname', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            Text('Ник: $nickname',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             SizedBox(height: 12),
             Text('Описание:', style: TextStyle(fontSize: 18)),
             SizedBox(height: 6),

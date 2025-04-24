@@ -20,7 +20,17 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_isLogin ? 'Вход' : 'Регистрация')),
+      appBar: AppBar(
+        title: Text(_isLogin ? 'Вход' : 'Регистрация'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              Navigator.pushNamed(context, '/search');
+            },
+          ),
+        ],
+      ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {
@@ -74,11 +84,14 @@ class _LoginPageState extends State<LoginPage> {
                       final password = _passwordController.text.trim();
 
                       if (_isLogin) {
-                        context.read<AuthBloc>().add(LoginRequested(email, password));
+                        context
+                            .read<AuthBloc>()
+                            .add(LoginRequested(email, password));
                       } else {
                         final nickname = _nicknameController.text.trim();
                         final description = _descriptionController.text.trim();
-                        context.read<AuthBloc>().add(RegisterRequested(email, password, nickname, description));
+                        context.read<AuthBloc>().add(RegisterRequested(
+                            email, password, nickname, description));
                       }
                     },
                     child: Text(_isLogin ? 'Войти' : 'Зарегистрироваться'),
@@ -91,7 +104,9 @@ class _LoginPageState extends State<LoginPage> {
                     _isLogin = !_isLogin;
                   });
                 },
-                child: Text(_isLogin ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти'),
+                child: Text(_isLogin
+                    ? 'Нет аккаунта? Зарегистрироваться'
+                    : 'Уже есть аккаунт? Войти'),
               )
             ],
           ),
