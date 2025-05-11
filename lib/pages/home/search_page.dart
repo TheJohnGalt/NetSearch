@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../blocs/search_bloc.dart';
-import '../blocs/search_event.dart';
-import '../blocs/search_state.dart';
+import '../../blocs/search_bloc.dart';
+import '../../blocs/search_event.dart';
+import '../../blocs/search_state.dart';
 
 class SearchPage extends StatefulWidget {
   @override
