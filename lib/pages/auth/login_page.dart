@@ -22,13 +22,19 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_isLogin ? 'Вход' : 'Регистрация'),
-        // Кнопка поиска убрана, теперь доступна через нижнюю навигацию после входа
       ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {
-            // После успешной аутентификации переходим на главный экран с навигацией
+            // При успешном входе/регистрации переходим на главный экран с навигацией
             Navigator.pushReplacementNamed(context, '/main');
+          } else if (state is AuthLoggedOut) {
+            // При выходе очищаем поля (опционально)
+            _emailController.clear();
+            _passwordController.clear();
+            _nicknameController.clear();
+            _descriptionController.clear();
+            // Можно показать сообщение или просто остаться на этом экране
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),

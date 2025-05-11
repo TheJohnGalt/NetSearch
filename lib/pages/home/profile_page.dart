@@ -40,6 +40,19 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Профиль пользователя'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            tooltip: 'Выйти',
+            onPressed: () {
+              // Отправляем событие выхода
+              context.read<AuthBloc>().add(LogoutRequested());
+
+              // Переходим на страницу входа, удаляя все предыдущие экраны
+              Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
