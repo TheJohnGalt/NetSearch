@@ -1,3 +1,5 @@
+// lib/blocs/project_bloc.dart
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'project_event.dart';
@@ -30,11 +32,11 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     try {
       await projectsBox.add({
         'ownerEmail': event.ownerEmail,
+        'ownerNickname': event.ownerNickname, // Добавляем ник владельца
         'title': event.title,
         'description': event.description,
       });
 
-      // После добавления обновляем список
       final allProjects = projectsBox.values.cast<Map>().toList();
       final userProjects = allProjects.where((p) => p['ownerEmail'] == event.ownerEmail).toList();
 

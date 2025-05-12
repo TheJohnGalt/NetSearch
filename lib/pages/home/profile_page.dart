@@ -1,3 +1,5 @@
+// lib/pages/home/profile_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/auth_bloc.dart';
@@ -8,51 +10,66 @@ import '../../blocs/project_event.dart';
 import '../../blocs/project_state.dart';
 
 class ProfilePage extends StatefulWidget {
+  final Map<String, dynamic>? userData;
+
+  const ProfilePage({Key? key, this.userData}) : super(key: key);
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  late String email;
+  late String nickname;
+  late String description;
+
+  bool isCurrentUser = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    final authState = context.read<AuthBloc>().state;
-    if (authState is AuthAuthenticated) {
-      context.read<ProjectBloc>().add(LoadProjects(authState.email));
+    if (widget.userData != null) {
+      email = widget.userData!['email'] ?? '';
+      nickname = widget.userData!['nickname'] ?? '';
+      description = widget.userData!['description'] ?? '';
+      isCurrentUser = false;
+      // Загружаем проекты пользователя, чей профиль просматриваем
+      context.read<ProjectBloc>().add(LoadProjects(email));
+    } else {
+      final authState = context.read<AuthBloc>().state;
+      if (authState is AuthAuthenticated) {
+        email = authState.email;
+        nickname = authState.nickname;
+        description = authState.description;
+        isCurrentUser = true;
+        context.read<ProjectBloc>().add(LoadProjects(email));
+      } else {
+        email = '';
+        nickname = '';
+        description = '';
+        isCurrentUser = false;
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final authState = context.watch<AuthBloc>().state;
-
-    String email = '';
-    String nickname = '';
-    String description = '';
-
-    if (authState is AuthAuthenticated) {
-      email = authState.email;
-      nickname = authState.nickname;
-      description = authState.description;
-    }
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Профиль пользователя'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            tooltip: 'Выйти',
-            onPressed: () {
-              // Отправляем событие выхода
-              context.read<AuthBloc>().add(LogoutRequested());
-
-              // Переходим на страницу входа, удаляя все предыдущие экраны
-              Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-            },
-          ),
-        ],
+        title: Text(isCurrentUser ? 'Мой профиль' : 'Профиль пользователя'),
+        actions: isCurrentUser
+            ? [
+                IconButton(
+                  icon: Icon(Icons.logout),
+                  tooltip: 'Выйти',
+                  onPressed: () {
+                    context.read<AuthBloc>().add(LogoutRequested());
+                    Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+                  },
+                ),
+              ]
+            : null,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -67,15 +84,19 @@ class _ProfilePageState extends State<ProfilePage> {
             SizedBox(height: 4),
             Text(description, style: TextStyle(fontSize: 16)),
             SizedBox(height: 24),
-            ElevatedButton.icon(
-              icon: Icon(Icons.add),
-              label: Text('Добавить сообщество'),
-              onPressed: () {
-                Navigator.pushNamed(context, '/project_create', arguments: email);
-              },
-            ),
-            SizedBox(height: 24),
-            Text('Мои сообщества:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            if (isCurrentUser) ...[
+              ElevatedButton.icon(
+                icon: Icon(Icons.add),
+                label: Text('Добавить сообщество'),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/project_create', arguments: email);
+                },
+              ),
+              SizedBox(height: 24),
+              Text('Мои сообщества:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            ] else ...[
+              Text('Сообщества пользователя:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            ],
             SizedBox(height: 8),
             Expanded(
               child: BlocBuilder<ProjectBloc, ProjectState>(
@@ -84,7 +105,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     return Center(child: CircularProgressIndicator());
                   } else if (state is ProjectLoaded) {
                     if (state.projects.isEmpty) {
-                      return Center(child: Text('Вы ещё не создали ни одного сообщества'));
+                      return Center(child: Text(isCurrentUser ? 'Вы ещё не создали ни одного сообщества' : 'У пользователя нет сообществ'));
                     }
                     return ListView.builder(
                       itemCount: state.projects.length,
@@ -94,6 +115,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: ListTile(
                             title: Text(project['title'] ?? ''),
                             subtitle: Text(project['description'] ?? ''),
+                            onTap: () {
+                              Navigator.pushNamed(context, '/project', arguments: project);
+                            },
                           ),
                         );
                       },

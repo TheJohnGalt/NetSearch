@@ -1,3 +1,5 @@
+// lib/blocs/project_event.dart
+
 abstract class ProjectEvent {}
 
 class LoadProjects extends ProjectEvent {
@@ -8,8 +10,9 @@ class LoadProjects extends ProjectEvent {
 
 class AddProject extends ProjectEvent {
   final String ownerEmail;
+  final String ownerNickname; // Добавляем ник владельца
   final String title;
   final String description;
 
-  AddProject(this.ownerEmail, this.title, this.description);
+  AddProject(this.ownerEmail, this.ownerNickname, this.title, this.description);
 }

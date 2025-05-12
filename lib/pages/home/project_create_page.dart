@@ -1,8 +1,12 @@
+// lib/pages/home/project_create_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/project_bloc.dart';
 import '../../blocs/project_event.dart';
 import '../../blocs/project_state.dart';
+import '../../blocs/auth_bloc.dart';
+import '../../blocs/auth_state.dart';
 
 class ProjectCreatePage extends StatefulWidget {
   @override
@@ -13,11 +17,30 @@ class _ProjectCreatePageState extends State<ProjectCreatePage> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
 
+  late String ownerEmail;
+  late String ownerNickname;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final args = ModalRoute.of(context)!.settings.arguments;
+    if (args is String) {
+      ownerEmail = args;
+    } else {
+      ownerEmail = '';
+    }
+
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      ownerNickname = authState.nickname;
+    } else {
+      ownerNickname = '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Получаем email текущего пользователя из аргументов или из AuthBloc
-    final String ownerEmail = ModalRoute.of(context)!.settings.arguments as String;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Создать сообщество'),
@@ -40,7 +63,6 @@ class _ProjectCreatePageState extends State<ProjectCreatePage> {
             BlocConsumer<ProjectBloc, ProjectState>(
               listener: (context, state) {
                 if (state is ProjectLoaded) {
-                  // После успешного создания возвращаемся назад
                   Navigator.pop(context);
                 } else if (state is ProjectError) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -64,7 +86,9 @@ class _ProjectCreatePageState extends State<ProjectCreatePage> {
                       return;
                     }
 
-                    context.read<ProjectBloc>().add(AddProject(ownerEmail, title, description));
+                    context.read<ProjectBloc>().add(
+                          AddProject(ownerEmail, ownerNickname, title, description),
+                        );
                   },
                   child: Text('Создать'),
                 );
