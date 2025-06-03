@@ -7,6 +7,8 @@ import 'pages/home/profile_page.dart';
 import 'pages/home/project_create_page.dart';
 import 'pages/home/project_page.dart';
 import 'pages/home/search_page.dart';
+import 'pages/home/chats_page.dart';
+import 'pages/home/chat_page.dart'; // Новый импорт
 import 'pages/main_screen.dart';
 
 class RouteGenerator {
@@ -44,6 +46,18 @@ class RouteGenerator {
         if (args is Map<String, dynamic>) {
           return MaterialPageRoute(
             builder: (_) => ProjectPage(),
+            settings: RouteSettings(arguments: args),
+          );
+        }
+        return _errorRoute();
+
+      case '/chats':
+        return MaterialPageRoute(builder: (_) => ChatsPage());
+
+      case '/chat': // Новый маршрут для страницы переписки
+        if (args is Map<String, dynamic>) {
+          return MaterialPageRoute(
+            builder: (_) => ChatPage(),
             settings: RouteSettings(arguments: args),
           );
         }

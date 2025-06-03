@@ -1,3 +1,5 @@
+// lib/pages/main_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'home/home_page.dart';
@@ -8,6 +10,8 @@ import '../blocs/auth_bloc.dart';
 import '../blocs/auth_state.dart';
 
 class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
   @override
   _MainScreenState createState() => _MainScreenState();
 }

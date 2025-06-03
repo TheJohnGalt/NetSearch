@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "795762511515",
+    "project_id": "netsearch-585eb",
+    "storage_bucket": "netsearch-585eb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:795762511515:android:2fe413214b3bc67872c03e",
+        "android_client_info": {
+          "package_name": "com.example.net_search"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDd3b2v1c1Fj1h8s_s2RgYZPb_ZA5dUxCc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -9,6 +9,8 @@ import '../../blocs/post_event.dart';
 import '../../blocs/post_state.dart';
 
 class ProjectPage extends StatefulWidget {
+  const ProjectPage({super.key});
+
   @override
   _ProjectPageState createState() => _ProjectPageState();
 }
@@ -38,14 +40,14 @@ class _ProjectPageState extends State<ProjectPage> {
   }
 
   void _showAddPostDialog() {
-    final _postController = TextEditingController();
+    final postController = TextEditingController();
 
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: Text('Создать пост'),
         content: TextField(
-          controller: _postController,
+          controller: postController,
           maxLines: 5,
           decoration: InputDecoration(hintText: 'Введите текст поста'),
         ),
@@ -56,7 +58,7 @@ class _ProjectPageState extends State<ProjectPage> {
           ),
           ElevatedButton(
             onPressed: () {
-              final content = _postController.text.trim();
+              final content = postController.text.trim();
               if (content.isNotEmpty) {
                 context.read<PostBloc>().add(AddPost(project['title'], content));
                 Navigator.pop(context);
@@ -81,8 +83,8 @@ class _ProjectPageState extends State<ProjectPage> {
       floatingActionButton: isOwner
           ? FloatingActionButton(
               onPressed: _showAddPostDialog,
-              child: Icon(Icons.add),
               tooltip: 'Добавить пост',
+              child: Icon(Icons.add),
             )
           : null,
       body: Padding(

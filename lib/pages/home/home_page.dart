@@ -7,6 +7,8 @@ import '../../blocs/post_event.dart';
 import '../../blocs/post_state.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -15,8 +17,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Загружаем все посты при инициализации
-    context.read<PostBloc>().add(LoadPosts('')); // Пустая строка - загрузить все посты
+// Загружаем все посты при инициализации
+    context
+        .read<PostBloc>()
+        .add(LoadPosts('')); // Пустая строка - загрузить все посты
   }
 
   @override
@@ -69,14 +73,14 @@ class _HomePageState extends State<HomePage> {
                         ),
                         TextButton(
                           onPressed: () {
-                            // Переход к комментариям (пока без функционала)
+// Переход к комментариям (пока без функционала)
                           },
                           child: Text('Комментарии'),
                         ),
                       ],
                     ),
                     onTap: () {
-                      // Переход на страницу сообщества
+// Переход на страницу сообщества
                       Navigator.pushNamed(
                         context,
                         '/project',

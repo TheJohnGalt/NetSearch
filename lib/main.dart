@@ -3,10 +3,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
 import 'blocs/auth_bloc.dart';
 import 'blocs/search_bloc.dart';
 import 'blocs/project_bloc.dart';
-import 'blocs/post_bloc.dart'; // Добавлен импорт
+import 'blocs/post_bloc.dart';
+import 'blocs/chat_bloc.dart';
+import 'blocs/message_bloc.dart';
+
 import 'route_generator.dart';
 
 void main() async {
@@ -14,12 +18,16 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox('usersBox');
   await Hive.openBox('projectsBox');
-  await Hive.openBox('postsBox'); // Открываем бокс для постов
+  await Hive.openBox('postsBox');
+  await Hive.openBox('chatsBox');
+  await Hive.openBox('messagesBox');
 
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -27,7 +35,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthBloc>(create: (_) => AuthBloc()),
         BlocProvider<SearchBloc>(create: (_) => SearchBloc()),
         BlocProvider<ProjectBloc>(create: (_) => ProjectBloc()),
-        BlocProvider<PostBloc>(create: (_) => PostBloc()), // Регистрируем PostBloc
+        BlocProvider<PostBloc>(create: (_) => PostBloc()),
+        BlocProvider<ChatBloc>(create: (_) => ChatBloc()),
+        BlocProvider<MessageBloc>(create: (_) => MessageBloc()),
       ],
       child: MaterialApp(
         title: 'Social Network Demo',

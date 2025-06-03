@@ -9,6 +9,8 @@ import '../../blocs/auth_bloc.dart';
 import '../../blocs/auth_state.dart';
 
 class ProjectCreatePage extends StatefulWidget {
+  const ProjectCreatePage({super.key});
+
   @override
   _ProjectCreatePageState createState() => _ProjectCreatePageState();
 }

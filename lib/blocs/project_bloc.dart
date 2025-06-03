@@ -1,5 +1,3 @@
-// lib/blocs/project_bloc.dart
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'project_event.dart';
@@ -15,11 +13,9 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
 
   Future<void> _onLoadProjects(LoadProjects event, Emitter<ProjectState> emit) async {
     emit(ProjectLoading());
-
     try {
       final allProjects = projectsBox.values.cast<Map>().toList();
       final userProjects = allProjects.where((p) => p['ownerEmail'] == event.ownerEmail).toList();
-
       emit(ProjectLoaded(userProjects));
     } catch (e) {
       emit(ProjectError('Ошибка загрузки проектов'));
@@ -28,19 +24,14 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
 
   Future<void> _onAddProject(AddProject event, Emitter<ProjectState> emit) async {
     emit(ProjectLoading());
-
     try {
       await projectsBox.add({
         'ownerEmail': event.ownerEmail,
-        'ownerNickname': event.ownerNickname, // Добавляем ник владельца
+        'ownerNickname': event.ownerNickname,
         'title': event.title,
         'description': event.description,
       });
-
-      final allProjects = projectsBox.values.cast<Map>().toList();
-      final userProjects = allProjects.where((p) => p['ownerEmail'] == event.ownerEmail).toList();
-
-      emit(ProjectLoaded(userProjects));
+      add(LoadProjects(event.ownerEmail));
     } catch (e) {
       emit(ProjectError('Ошибка при добавлении проекта'));
     }

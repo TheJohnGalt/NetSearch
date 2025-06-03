@@ -1,0 +1,2 @@
+D:/ucheba/kurs3/mobilki/netSearch_project/net_search/android/app/.cxx/Debug/4d461z69/x86_64/CMakeFiles/edit_cache.dir
+D:/ucheba/kurs3/mobilki/netSearch_project/net_search/android/app/.cxx/Debug/4d461z69/x86_64/CMakeFiles/rebuild_cache.dir
