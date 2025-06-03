@@ -1,26 +1,41 @@
-// lib/pages/home/home_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
 import '../../blocs/post_bloc.dart';
 import '../../blocs/post_event.dart';
 import '../../blocs/post_state.dart';
+import '../../blocs/auth_bloc.dart';
+import '../../blocs/auth_state.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  List<String> subscriptions = [];
+  String currentUserEmail = '';
+
   @override
-  void initState() {
-    super.initState();
-// Загружаем все посты при инициализации
-    context
-        .read<PostBloc>()
-        .add(LoadPosts('')); // Пустая строка - загрузить все посты
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      currentUserEmail = authState.email;
+      final usersBox = Hive.box('usersBox');
+      final users = usersBox.values.cast<Map>().toList();
+      Map? user;
+      for (final u in users) {
+        if (u['email'] == currentUserEmail) {
+          user = u;
+          break;
+        }
+      }
+      subscriptions = user != null && user['subscriptions'] != null
+          ? List<String>.from(user['subscriptions'])
+          : [];
+    }
+    context.read<PostBloc>().add(LoadPosts(''));
   }
 
   @override
@@ -36,9 +51,11 @@ class _HomePageState extends State<HomePage> {
             if (state is PostLoading) {
               return Center(child: CircularProgressIndicator());
             } else if (state is PostLoaded) {
-              final posts = state.posts;
+              final posts = state.posts
+                  .where((post) => subscriptions.contains(post['projectTitle']))
+                  .toList();
               if (posts.isEmpty) {
-                return Center(child: Text('Постов пока нет'));
+                return Center(child: Text('Нет постов из ваших подписок'));
               }
               return ListView.separated(
                 itemCount: posts.length,
@@ -65,22 +82,19 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         IconButton(
                           icon: Icon(Icons.thumb_up_alt_outlined),
-                          onPressed: () {}, // Пока без функционала
+                          onPressed: () {},
                         ),
                         IconButton(
                           icon: Icon(Icons.thumb_down_alt_outlined),
-                          onPressed: () {}, // Пока без функционала
+                          onPressed: () {},
                         ),
                         TextButton(
-                          onPressed: () {
-// Переход к комментариям (пока без функционала)
-                          },
+                          onPressed: () {},
                           child: Text('Комментарии'),
                         ),
                       ],
                     ),
                     onTap: () {
-// Переход на страницу сообщества
                       Navigator.pushNamed(
                         context,
                         '/project',

@@ -31,7 +31,6 @@ class _MainScreenState extends State<MainScreen> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthLoggedOut) {
-          // При выходе возвращаемся на экран входа
           Navigator.pushReplacementNamed(context, '/');
         }
       },

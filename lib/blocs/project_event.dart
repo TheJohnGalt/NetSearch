@@ -10,7 +10,7 @@ class LoadProjects extends ProjectEvent {
 
 class AddProject extends ProjectEvent {
   final String ownerEmail;
-  final String ownerNickname; // Добавляем ник владельца
+  final String ownerNickname;
   final String title;
   final String description;
 

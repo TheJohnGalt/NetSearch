@@ -15,8 +15,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   Future<void> _onSearchRequested(SearchRequested event, Emitter<SearchState> emit) async {
     emit(SearchLoading());
 
-    await Future.delayed(Duration(milliseconds: 300)); // имитация задержки
-
     final query = event.query.toLowerCase();
     final users = usersBox.values.cast<Map>().toList();
 

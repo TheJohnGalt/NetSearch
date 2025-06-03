@@ -1,5 +1,3 @@
-// lib/pages/home/project_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/auth_bloc.dart';
@@ -7,6 +5,9 @@ import '../../blocs/auth_state.dart';
 import '../../blocs/post_bloc.dart';
 import '../../blocs/post_event.dart';
 import '../../blocs/post_state.dart';
+import '../../blocs/subscription_bloc.dart';
+import '../../blocs/subscription_event.dart';
+import '../../blocs/subscription_state.dart';
 
 class ProjectPage extends StatefulWidget {
   const ProjectPage({super.key});
@@ -19,6 +20,7 @@ class _ProjectPageState extends State<ProjectPage> {
   late Map<String, dynamic> project;
   late String currentUserEmail;
   late String currentUserNickname;
+  bool? isSubscribed;
 
   @override
   void didChangeDependencies() {
@@ -26,11 +28,11 @@ class _ProjectPageState extends State<ProjectPage> {
 
     project = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-    // Получаем текущего пользователя из AuthBloc
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
       currentUserEmail = authState.email;
       currentUserNickname = authState.nickname;
+      context.read<SubscriptionBloc>().add(LoadSubscriptions(currentUserEmail));
     } else {
       currentUserEmail = '';
       currentUserNickname = '';
@@ -106,6 +108,28 @@ class _ProjectPageState extends State<ProjectPage> {
               project['description'] ?? '',
               style: TextStyle(fontSize: 18),
             ),
+            SizedBox(height: 16),
+            if (!isOwner)
+              BlocBuilder<SubscriptionBloc, SubscriptionState>(
+                builder: (context, state) {
+                  bool subscribed = false;
+                  if (state is SubscriptionLoaded) {
+                    subscribed = state.subscriptions.contains(project['title']);
+                  } else if (state is SubscriptionChanged) {
+                    subscribed = state.isSubscribed;
+                  }
+                  return ElevatedButton(
+                    onPressed: subscribed
+                        ? null
+                        : () {
+                            context.read<SubscriptionBloc>().add(
+                                  SubscribeToProject(currentUserEmail, project['title']),
+                                );
+                          },
+                    child: Text(subscribed ? 'Вы подписаны' : 'Подписаться'),
+                  );
+                },
+              ),
             SizedBox(height: 24),
             Text(
               'Посты сообщества:',
@@ -146,16 +170,14 @@ class _ProjectPageState extends State<ProjectPage> {
                             children: [
                               IconButton(
                                 icon: Icon(Icons.thumb_up_alt_outlined),
-                                onPressed: () {}, // Пока без функционала
+                                onPressed: () {},
                               ),
                               IconButton(
                                 icon: Icon(Icons.thumb_down_alt_outlined),
-                                onPressed: () {}, // Пока без функционала
+                                onPressed: () {},
                               ),
                               TextButton(
-                                onPressed: () {
-                                  // Переход к комментариям (пока без функционала)
-                                },
+                                onPressed: () {},
                                 child: Text('Комментарии'),
                               ),
                             ],
